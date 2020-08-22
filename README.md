@@ -19,6 +19,9 @@
 格式化JSON后(自动复制结果):
 ![](docs/images/Json生成Golang代码-格式化JSON后(自动复制结果).png)
 
+来一串JSON测试：
+![](docs/images/Json生成Golang代码-来一串JSON测试.png)
+
 ## 请作者喝咖啡
 
 | 支付宝                                                       | 微信                                                 |

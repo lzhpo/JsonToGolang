@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <title>JSON转Golang工具</title>
     <link rel="stylesheet" href="lib/layui/css/layui.css">
-
-    <script src="lib/jquery/jquery-3.5.1.js"></script>
-    <script src="lib/jsontogolang/jsontogolang.js"></script>
 </head>
 <body style="background-color: #F2F2F2;padding: 15px;">
 
 <div>
     <form class="layui-form" action="">
-        <div class="layui-card">
+        <div class="layui-card layui-anim layui-anim-upbit">
             <div class="layui-card-body">
                 <div class="layui-form-item layui-form-text" style="margin-top: 15px;">
                     <div class="layui-row layui-col-space10">
@@ -36,7 +33,7 @@
             </div>
         </div>
 
-        <div class="layui-card">
+        <div class="layui-card layui-anim layui-anim-upbit">
             <div class="layui-card-body">
                 <div class="layui-form-item layui-form-text">
                     <div class="layui-row layui-col-space10">
@@ -45,6 +42,7 @@
                         <label class="layui-form-label layui-input-inline">
                             JSON数据：
                             <button class="layui-btn layui-btn-normal layui-btn-xs" lay-submit lay-filter="formatJson">格式化JSON</button>
+                            <button class="layui-btn layui-btn-xs" lay-submit lay-filter="testGenerate">来一串JSON</button>
                             <button type="reset" class="layui-btn layui-btn-danger layui-btn-xs">清空内容</button>
                         </label>
                         <div class="layui-input-inline">
@@ -70,7 +68,9 @@
     </form>
 </div>
 
+<script src="lib/jquery/jquery-3.5.1.js"></script>
 <script src="lib/layui/layui.all.js"></script>
+<script src="lib/jsontogolang/jsontogolang.js"></script>
 <script>
     layui.use('form', function() {
         var form = layui.form;
@@ -78,6 +78,30 @@
         // 生成golang代码
         form.on('submit(generateGolangSubmit)', function (data) {
             getGolangCode(data);
+            return false;
+        });
+
+        // 来一串JSON测试
+        form.on('submit(testGenerate)', function (data) {
+            let jsonData = "" +
+                "{\n" +
+                "  \"addresses\": [\n" +
+                "    {\n" +
+                "      \"addressTypes\": [\n" +
+                "        \"xxx\",\n" +
+                "        \"xxx\"\n" +
+                "      ],\n" +
+                "      \"street\": \"xxx\",\n" +
+                "      \"houseNumber\": \"xxx\",\n" +
+                "      \"city\": \"xxx\",\n" +
+                "      \"country\": \"xxx\",\n" +
+                "      \"postalCode\": \"xxx\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+            $("#json-data").val(jsonData);
+            generateGolang(jsonData, "JsonTest", true);
+
             return false;
         });
 
