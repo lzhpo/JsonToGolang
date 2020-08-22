@@ -1,0 +1,15 @@
+{
+  "addresses": [
+    {
+      "addressTypes": [
+        "xxx",
+        "xxx"
+      ],
+      "street": "xxx",
+      "houseNumber": "xxx",
+      "city": "xxx",
+      "country": "xxx",
+      "postalCode": "xxx"
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON转Golang工具</title>
+    <link rel="stylesheet" href="lib/layui/css/layui.css">
+
+    <script src="lib/jquery/jquery-3.5.1.js"></script>
+    <script src="lib/jsontogolang/jsontogolang.js"></script>
+</head>
+<body style="background-color: #F2F2F2;padding: 15px;">
+
+<div>
+    <form class="layui-form" action="">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-form-text" style="margin-top: 15px;">
+                    <div class="layui-row layui-col-space10">
+                        <div class="layui-col-md4">
+                            <label class="layui-form-label">结构名称？</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="golangName" placeholder="请输入生成的Golang结构名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <label class="layui-form-label">结构展开？</label>
+                            <input id="flatten-switch" type="checkbox" name="flattenSwitch" lay-filter="flattenSwitch" lay-skin="switch" lay-text="展开|嵌套" checked/>
+                        </div>
+                        <div class="layui-col-md4">
+                            <button class="layui-btn layui-btn-radius layui-btn-normal layui-btn-sm" lay-submit lay-filter="generateGolangSubmit">
+                                <i class="layui-icon layui-icon-ok"></i> 点我生成代码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-form-text">
+                    <div class="layui-row layui-col-space10">
+                        <div class="layui-col-md6">
+                    <span>
+                        <label class="layui-form-label layui-input-inline">
+                            JSON数据：
+                            <button class="layui-btn layui-btn-normal layui-btn-xs" lay-submit lay-filter="formatJson">格式化JSON</button>
+                            <button type="reset" class="layui-btn layui-btn-danger layui-btn-xs">清空内容</button>
+                        </label>
+                        <div class="layui-input-inline">
+                            <textarea cols="100%" rows="25"  style="white-space: pre-wrap;" id="json-data" name="jsonData" placeholder="请输入JSON数据..." class="layui-textarea"></textarea>
+                        </div>
+                    </span>
+                        </div>
+                        <div class="layui-col-md6">
+                    <span>
+                        <label class="layui-form-label layui-input-inline">
+                            Go代码：
+                            <button class="layui-btn layui-btn-normal layui-btn-xs" lay-submit lay-filter="copyCode">点我复制</button>
+                        </label>
+                        <div class="layui-input-inline">
+                            <textarea cols="100%" rows="25" id="golang-code" name="golang-code" placeholder="将要生成的Golang代码..." class="layui-textarea"></textarea>
+                        </div>
+                    </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="lib/layui/layui.all.js"></script>
+<script>
+    layui.use('form', function() {
+        var form = layui.form;
+
+        // 生成golang代码
+        form.on('submit(generateGolangSubmit)', function (data) {
+            getGolangCode(data);
+            return false;
+        });
+
+        // 格式化JSON
+        form.on('submit(formatJson)', function (data) {
+            let jsonDataField = data.field.jsonData;
+            // 解析为JSON
+            let jsonDataParse = JSON.parse(jsonDataField);
+
+            // '\t'：缩进一个tab
+            // 4：缩进4个空格
+            // 美化JSON
+            let jsonDataStringify = JSON.stringify(jsonDataParse, null, 2)
+            $("#json-data").val(jsonDataStringify);
+
+            return false;
+        })
+
+        // 复制生成的Golang代码至剪切板
+        form.on('submit(copyCode)', function (data) {
+            console.log('复制：', data.field.jsonData)
+            if (data.field.jsonData !== null && data.field.jsonData !== "") {
+                // 复制内容至剪切板
+                copyCode();
+            } else {
+                layer.msg("请在左侧输入JSON数据！")
+            }
+
+            return false;
+        })
+    })
+</script>
+<script>
+    /**
+     * 获取表单数据，然后从表单数据的JSON内容中去生成Golang代码
+     */
+    function getGolangCode(data) {
+        let golangName = data.field.golangName;
+        let jsonData = data.field.jsonData;
+        let flatten = data.field.flattenSwitch;
+
+        golangName === undefined ? golangName === "JsonToGolangExample" : golangName;
+        // 生成的Golang代码是否展开
+        flatten === undefined ? generateGolang(jsonData, golangName, false) : generateGolang(jsonData, golangName, true);
+    }
+
+    /**
+     * 参数1：需要转Golang的JSON内容
+     * 参数2：生成的Golang结构体名字
+     * 参数3：生成的Golang结构体是内联的还是展开的
+     */
+    function generateGolang(jsonData, golangName, flatten) {
+        let golangCode = jsonToGolang(jsonData, golangName, flatten).go;
+        $("#golang-code").val(golangCode);
+
+        // 复制内容至剪切板
+        copyCode();
+    }
+
+    /**
+     * 复制生成的Golang代码
+     */
+    function copyCode() {
+        // 获取需要复制的对象
+        var copyText = $("#golang-code");
+        // 选择需要复制的对象
+        copyText.select();
+        // 执行复制
+        document.execCommand("Copy");
+        layer.msg('生成的Golang代码已自动复制至剪切板！')
+
+        return false;
+    }
+</script>
+</body>
+</html>
